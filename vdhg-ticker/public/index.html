@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VDHG Ticker</title>
+<style>
+body{margin:0;background:#0b0f14;color:#e6edf3;font-family:system-ui,sans-serif}
+h1{text-align:center;font-weight:500;margin:40px 0}
+.bar{overflow:hidden;white-space:nowrap;background:#111820;border-block:1px solid #223}
+.track{display:inline-block;padding:12px 0;animation:scroll 30s linear infinite}
+.item{display:inline-block;margin:0 28px;font-variant-numeric:tabular-nums}
+.up{color:#3fb950}.down{color:#f85149}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+</style></head><body>
+<h1>VDHG Ticker</h1>
+<div class="bar"><div class="track" id="track"></div></div>
+<script>
+let last={};
+async function update(){
+  const p=await (await fetch('/api/prices')).json();
+  const html=Object.entries(p).map(([s,v])=>{
+    const c=last[s]===undefined?'':v>=last[s]?'up':'down';
+    return `<span class="item ${c}">${s} ${v.toLocaleString()}</span>`;
+  }).join('');
+  document.getElementById('track').innerHTML=html+html;
+  last=p;
+}
+update();setInterval(update,2000);
+</script></body></html>

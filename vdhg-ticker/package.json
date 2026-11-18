@@ -1,0 +1,8 @@
+{
+  "name": "vdhg-ticker",
+  "version": "1.0.0",
+  "description": "Simple scrolling price ticker served by Node.js",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "license": "MIT"
+}
