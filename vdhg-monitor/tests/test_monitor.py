@@ -89,6 +89,7 @@ def test_dry_run_and_fetch_failure(monkeypatch, tmp_path, capsys):
     monkeypatch.setattr(a, "fetch_ohlcv", lambda *x: synthetic())
     sent = []
     monkeypatch.setattr(notify, "send_notification", lambda r: sent.append(r))
+    monkeypatch.setattr(notify, "STATE_FILE", tmp_path / "s.json")
     assert a.main(["--dry-run"]) == 0
     assert not sent and not (tmp_path / "d.csv").exists()
 
@@ -97,3 +98,13 @@ def test_dry_run_and_fetch_failure(monkeypatch, tmp_path, capsys):
     monkeypatch.setattr(a, "fetch_ohlcv", boom)
     assert a.main([]) == 1 and not sent
     assert "no network" in (tmp_path / "error.log").read_text()
+
+
+def test_real_run_writes_only_to_patched_paths(monkeypatch, tmp_path):
+    monkeypatch.setattr(a, "CSV_PATH", tmp_path / "d.csv")
+    monkeypatch.setattr(a, "LOG_PATH", tmp_path / "e.log")
+    monkeypatch.setattr(notify, "STATE_FILE", tmp_path / "s.json")
+    monkeypatch.setattr(a, "fetch_ohlcv", lambda *x: synthetic(seed=3))
+    monkeypatch.setattr(notify, "send_notification", lambda r: None)
+    assert a.main([]) == 0
+    assert (tmp_path / "d.csv").exists() and (tmp_path / "s.json").exists()

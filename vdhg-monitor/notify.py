@@ -14,15 +14,15 @@ STATE_FILE = Path(__file__).parent / "state" / "last_alert.json"
 
 
 # ---------- duplicate prevention ----------
-def load_state(path: Path = STATE_FILE) -> dict:
+def load_state(path: Path = None) -> dict:
     try:
-        return json.loads(Path(path).read_text())
+        return json.loads(Path(path or STATE_FILE).read_text())
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
 
-def save_state(date: str, signal: str, path: Path = STATE_FILE) -> None:
-    path = Path(path)
+def save_state(date: str, signal: str, path: Path = None) -> None:
+    path = Path(path or STATE_FILE)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps({"date": date, "signal": signal}, indent=2))
 

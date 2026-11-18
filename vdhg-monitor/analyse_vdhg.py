@@ -194,15 +194,17 @@ def latest_summary(df: pd.DataFrame) -> dict:
 
 
 # ----------------------------------------------------------------------- CSV
-def merge_with_existing(new: pd.DataFrame, path: Path = CSV_PATH) -> pd.DataFrame:
+def merge_with_existing(new: pd.DataFrame, path: Path = None) -> pd.DataFrame:
     """Keep older rows already in the CSV; fresh data wins on overlapping dates."""
+    path = path or CSV_PATH
     if path.exists():
         old = pd.read_csv(path, index_col="date", parse_dates=True)[COLS]
         new = pd.concat([old[~old.index.isin(new.index)], new]).sort_index()
     return new
 
 
-def write_csv(df: pd.DataFrame, path: Path = CSV_PATH) -> None:
+def write_csv(df: pd.DataFrame, path: Path = None) -> None:
+    path = path or CSV_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
     out = df.copy()
     out.index = out.index.strftime("%Y-%m-%d")
